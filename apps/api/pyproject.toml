@@ -1,0 +1,20 @@
+# ============================================================================
+# 业务应用：FastAPI 服务（不对外发布）
+#   - [tool.uv] package = false → 本项目不会被构建/安装为包，源码直接运行
+#   - 依赖 workspace 内的 common-utils（自动可编辑链接）
+# ============================================================================
+
+[project]
+name = "api-app"
+version = "0.1.0"
+description = "FastAPI 业务应用（内部服务，不发布）"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "common-utils",
+]
+
+[tool.uv]
+package = false

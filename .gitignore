@@ -1,6 +1,26 @@
-# gitignore template for LangChain products, e.g., LangGraph, LangSmith
-# website: https://www.langchain.com/
-# website: https://www.langchain.com/langgraph
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
 
-# LangGraph
-.langgraph_api/
+# ---- 虚拟环境 / uv ----
+.venv/
+venv/
+# uv.lock 应提交（monorepo 统一锁文件），不要忽略
+
+# ---- 测试 / 类型 / 覆盖率 ----
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---- 编辑器 / 系统 ----
+.idea/
+.vscode/
+.DS_Store

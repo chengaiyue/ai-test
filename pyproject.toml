@@ -1,0 +1,40 @@
+# ============================================================================
+# Monorepo 根工作区（virtual workspace）
+# 根本身不是一个可安装包（没有 [project]），只负责：
+#   1. 声明 workspace 成员（packages/* 与 apps/*）
+#   2. 统一锁定依赖（根目录唯一 uv.lock）+ 统一虚拟环境（根目录 .venv）
+#   3. 集中配置开发工具链（ruff / pytest）
+# ============================================================================
+
+[tool.uv.workspace]
+members = ["packages/*", "apps/*"]
+
+# 显式声明内部包从 workspace 解析，避免误从 PyPI 拉取同名公共包
+[tool.uv.sources]
+common-utils = { workspace = true }
+
+# 根级开发依赖：对整个 workspace 生效（uv sync --dev 时安装）
+[dependency-groups]
+dev = [
+    "ruff>=0.16",
+    "pytest>=9",
+]
+
+# ---------------------------------------------------------------------------
+# 工具链统一配置
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+# E/F: pycodestyle/pyflakes, I: isort, UP: pyupgrade, B: bugbear
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+# 库以 src 布局嵌套在 packages/ 下，需显式告知 isort 这是第一方包
+known-first-party = ["common_utils"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages", "apps"]
+addopts = "-q"

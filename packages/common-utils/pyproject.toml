@@ -1,0 +1,18 @@
+# ============================================================================
+# 可安装 / 可发布的库（src 布局，业界最佳实践）
+#   - 代码在 src/common_utils/ 下，与测试目录隔离，避免“未安装即可 import”的假象
+#   - 含 [build-system]：可被 uv build / uv publish 构建发布到 PyPI / 私有源
+# ============================================================================
+
+[project]
+name = "common-utils"
+version = "0.1.0"
+description = "内部公共工具库（示例），可被各业务应用复用、可对外发布"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "zhangchengcheng" }]
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.12.9"]
+build-backend = "uv_build"

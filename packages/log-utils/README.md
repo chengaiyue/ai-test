@@ -11,13 +11,21 @@
 ```python
 from log_utils import get_logger
 
-# 默认输出到 stderr
+# 默认同时输出到 stderr 和日志文件
 logger = get_logger(__name__)
 logger.info("服务启动")
 # 2026-09-12 10:00:00 | INFO     | my_app | 服务启动
 
-# 传入 log_file 可同时写入文件（父目录自动创建，UTF-8 编码）
+# 默认日志文件位置：<项目最顶层>/log/<name>.log
+# 从当前工作目录向上查找，含 uv.lock 的目录（workspace 根）优先，
+# 否则取最近的含 pyproject.toml 的目录，再否则用当前工作目录。
+# 目录/文件在首次写入时才创建，UTF-8 编码。
+
+# 自定义日志路径
 file_logger = get_logger(__name__, log_file="logs/app.log")
+
+# 只输出到 stderr，不写文件
+stderr_logger = get_logger(__name__, log_file=None)
 ```
 
 ## 在其它成员中使用

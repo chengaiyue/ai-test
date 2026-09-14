@@ -12,6 +12,7 @@ members = ["packages/*", "apps/*"]
 # 显式声明内部包从 workspace 解析，避免误从 PyPI 拉取同名公共包
 [tool.uv.sources]
 common-utils = { workspace = true }
+log-utils = { workspace = true }
 
 # 根级开发依赖：对整个 workspace 生效（uv sync --dev 时安装）
 [dependency-groups]

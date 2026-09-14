@@ -1,0 +1,19 @@
+# ============================================================================
+# 可安装 / 可发布的库（src 布局，业界最佳实践）
+#   - 代码在 src/log_utils/ 下，与测试目录隔离，避免“未安装即可 import”的假象
+#   - 含 [build-system]：可被 uv build / uv publish 构建发布到 PyPI / 私有源
+#   - 导入名使用 log_utils 而非 logging，避免遮蔽 Python 标准库 logging
+# ============================================================================
+
+[project]
+name = "log-utils"
+version = "0.1.0"
+description = "内部日志工具库，基于标准库 logging 的统一封装，可被各业务应用复用"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "zhangchengcheng" }]
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.12.9"]
+build-backend = "uv_build"

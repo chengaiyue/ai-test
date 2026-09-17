@@ -28,7 +28,7 @@ def test_get_logger_defaults_to_log_dir_at_project_root(tmp_path, monkeypatch):
     workdir.mkdir(parents=True)
     monkeypatch.chdir(workdir)
 
-    log_file = tmp_path / "log" / "test_default.log"
+    log_file = tmp_path / "logs" / "test_default.log"
     logger = get_logger("test_default")
     logger.info("默认文件日志")
     for handler in logger.handlers:
@@ -50,8 +50,8 @@ def test_get_logger_prefers_workspace_root(tmp_path, monkeypatch):
     for handler in logging.getLogger("test_ws_root").handlers:
         handler.flush()
 
-    assert (tmp_path / "log" / "test_ws_root.log").exists()
-    assert not (app_dir / "log").exists()
+    assert (tmp_path / "logs" / "test_ws_root.log").exists()
+    assert not (app_dir / "logs").exists()
 
 
 def test_get_logger_none_disables_file(tmp_path, monkeypatch):
@@ -59,7 +59,7 @@ def test_get_logger_none_disables_file(tmp_path, monkeypatch):
     logger = get_logger("test_no_file", log_file=None)
 
     assert not [h for h in logger.handlers if isinstance(h, logging.FileHandler)]
-    assert not (tmp_path / "log").exists()
+    assert not (tmp_path / "logs").exists()
 
 
 def test_get_logger_writes_to_file(tmp_path):

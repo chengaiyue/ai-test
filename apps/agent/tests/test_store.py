@@ -1,7 +1,6 @@
 """向量库端到端测试：切片入库、查重、相似度查询。"""
 
 import pytest
-
 from agent.vectorstore import VectorStore, chunk_text
 from agent.vectorstore.document import content_hash, make_document
 from agent.vectorstore.embeddings import HashingEmbeddings

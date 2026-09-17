@@ -27,7 +27,7 @@ def test_similar_texts_have_higher_cosine():
 
     def cosine(a: str, b: str) -> float:
         va, vb = embeddings.embed_query(a), embeddings.embed_query(b)
-        return sum(x * y for x, y in zip(va, vb))
+        return sum(x * y for x, y in zip(va, vb, strict=True))
 
     related = cosine("向量数据库的相似度检索", "向量数据库检索")
     unrelated = cosine("向量数据库的相似度检索", "今天晴朗适合出门散步")

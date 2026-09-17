@@ -86,7 +86,9 @@ def _cmd_hello(_args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="agent", description="向量数据库：切片 / 查重 / 相似度查询")
+    parser = argparse.ArgumentParser(
+        prog="agent", description="向量数据库：切片 / 查重 / 相似度查询"
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     add = subparsers.add_parser("add", help="添加文档（文件或 --text），重复文档自动跳过")

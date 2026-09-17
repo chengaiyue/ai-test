@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 logger.info("服务启动")
 # 2026-09-12 10:00:00 | INFO     | my_app | 服务启动
 
-# 默认日志文件位置：<项目最顶层>/log/<name>.log
+# 默认日志文件位置：<项目最顶层>/logs/<name>.log
 # 从当前工作目录向上查找，含 uv.lock 的目录（workspace 根）优先，
 # 否则取最近的含 pyproject.toml 的目录，再否则用当前工作目录。
 # 目录/文件在首次写入时才创建，UTF-8 编码。

@@ -32,14 +32,14 @@ def _project_root() -> Path:
 
 
 def _default_log_file(name: str | None) -> Path:
-    """默认日志文件：<项目根>/log/<logger 名称或 app>.log。"""
+    """默认日志文件：<项目根>/logs/<logger 名称或 app>.log。"""
     return _project_root() / _LOG_DIR_NAME / f"{name or 'app'}.log"
 
 
 class _LazyFileHandler(logging.FileHandler):
     """首次真正写日志时才创建目录、打开文件。
 
-    避免仅因导入包 / 调用 get_logger 就在磁盘上留下空的 log 目录和空文件。
+    避免仅因导入包 / 调用 get_logger 就在磁盘上留下空的 logs 目录和空文件。
     """
 
     def __init__(self, filename: str | Path, encoding: str = "utf-8") -> None:
@@ -82,9 +82,9 @@ def get_logger(
     """获取统一配置的 logger。
 
     - 默认输出到 stderr，格式为「时间 | 级别 | 名称 | 消息」。
-    - 默认额外写入日志文件 ``<项目根>/log/<name 或 app>.log``：从当前工作目录
+    - 默认额外写入日志文件 ``<项目根>/logs/<name 或 app>.log``：从当前工作目录
       向上找到的最顶层项目目录（含 ``uv.lock`` / ``pyproject.toml``）下的
-      ``log`` 文件夹，父目录不存在会自动创建，编码 UTF-8。
+      ``logs`` 文件夹，父目录不存在会自动创建，编码 UTF-8。
     - 显式传入 ``log_file`` 可自定义路径；显式传 ``None`` 表示不写文件。
     - 同名 logger 由 logging 全局单例管理，重复调用不会重建；
       已有的终端 handler 和指向同一路径的文件 handler 都不会重复添加。
@@ -93,7 +93,7 @@ def get_logger(
     Args:
         name: logger 名称，通常传 ``__name__``；为 None 时返回 root logger。
         level: 日志级别，默认 ``logging.INFO``。
-        log_file: 日志文件路径；默认写入项目最顶层 ``log`` 文件夹；
+        log_file: 日志文件路径；默认写入项目最顶层 ``logs`` 文件夹；
             传 None 时不写文件。
     """
     if log_file is _UNSET:

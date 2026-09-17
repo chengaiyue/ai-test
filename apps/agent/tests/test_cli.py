@@ -1,7 +1,6 @@
 """CLI 冒烟测试：add（含查重）→ search → stats。"""
 
 import pytest
-
 from agent.cli import main
 
 

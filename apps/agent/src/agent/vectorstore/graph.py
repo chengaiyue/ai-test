@@ -51,7 +51,7 @@ def build_ingest_graph(store: VectorStore):
 
         new_documents: list[Document] = []
         duplicate_hashes: list[str] = []
-        for doc, doc_hash in zip(documents, hashes):
+        for doc, doc_hash in zip(documents, hashes, strict=True):
             if doc_hash in existing:
                 duplicate_hashes.append(doc_hash)
                 continue
@@ -104,7 +104,12 @@ def build_query_graph(store: VectorStore):
         )
         return {
             "results": [
-                {"content": doc.page_content, "score": score, "metadata": doc.metadata}
+                {
+                    "content": doc.page_content,
+                    # 余弦相似度理论上落在 [-1, 1]，收敛到 [0, 1] 便于展示
+                    "score": max(0.0, min(1.0, float(score))),
+                    "metadata": doc.metadata,
+                }
                 for doc, score in hits
             ]
         }

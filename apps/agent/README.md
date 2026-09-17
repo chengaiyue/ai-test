@@ -51,9 +51,11 @@ from agent.vectorstore import Document  # 复用 langchain_core.documents.Docume
 from agent.vectorstore import VectorStore, make_document
 
 store = VectorStore()  # 默认本地嵌入，路径 data/vector_store
-result = store.add_documents([
-    make_document("文档正文……", title="标题", source="intro.txt"),
-])
+result = store.add_documents(
+    [
+        make_document("文档正文……", title="标题", source="intro.txt"),
+    ]
+)
 print(result.added_count, result.duplicate_count, result.chunks_added)
 
 for hit in store.search("查询内容", k=3):

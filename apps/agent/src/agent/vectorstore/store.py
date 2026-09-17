@@ -88,6 +88,8 @@ class VectorStore:
             embedding_function=self.embeddings,
             persist_directory=str(self.path),
             client_settings=client_settings,
+            # 用余弦距离：LangChain 换算出的相关度即余弦相似度，范围直观
+            collection_metadata={"hnsw:space": "cosine"},
         )
         self._collection = self.vectorstore._collection  # 查重 / 统计走底层批量接口
 
@@ -105,9 +107,7 @@ class VectorStore:
             where: dict = {"doc_hash": unique[0]}
         else:
             where = {"doc_hash": {"$in": unique}}
-        metadatas = self._collection.get(where=where, include=["metadatas"]).get(
-            "metadatas", []
-        )
+        metadatas = self._collection.get(where=where, include=["metadatas"]).get("metadatas", [])
         return {meta["doc_hash"] for meta in metadatas if meta and "doc_hash" in meta}
 
     # ------------------------------------------------------------------ 写入

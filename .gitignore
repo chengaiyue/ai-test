@@ -17,6 +17,9 @@ venv/
 logs/
 data/
 
+# ---- 密钥 / 本地配置（模板 config.example.toml 可提交）----
+apps/agent/config.toml
+
 # ---- 测试 / 类型 / 覆盖率 ----
 .pytest_cache/
 .ruff_cache/

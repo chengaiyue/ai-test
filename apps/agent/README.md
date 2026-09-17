@@ -1,7 +1,37 @@
 # agent
 
-基于 **LangChain + LangGraph + Chroma** 的向量数据库示例应用，提供文档入库（切片）、
-内容指纹查重与语义相似度查询。
+基于 **LangChain + LangGraph + Chroma** 的示例应用：
+
+- **向量数据库**：文档入库（切片）、内容指纹查重与语义相似度查询；
+- **大模型对话**：调用火山引擎方舟 Agent Plan（OpenAI 兼容协议），由 LangGraph 编排，
+  支持逐 token 流式输出。
+
+## 大模型配置
+
+对话功能读取 `apps/agent/config.toml`（TOML 格式，使用 Python 标准库解析，无需额外依赖）：
+
+```bash
+cp apps/agent/config.example.toml apps/agent/config.toml
+```
+
+```toml
+[llm]
+base_url = "https://ark.cn-beijing.volces.com/api/plan/v3"  # Agent Plan 专属地址
+api_key = "ark-你的密钥"                                      # 也可用环境变量 ARK_API_KEY
+model = "doubao-seed-2.0-mini"                               # 套餐内模型 ID
+temperature = 0.7
+stream = true                                                # CLI 默认流式输出
+```
+
+说明：
+
+- `config.toml` 含真实密钥，已在 `.gitignore` 中忽略；可提交的模板是
+  `config.example.toml`。
+- 配置文件查找顺序：环境变量 `AGENT_CONFIG_PATH` → `apps/agent/config.toml`
+  → 当前目录 `./config.toml`。
+- 可选模型见[方舟 Agent Plan 文档](https://www.volcengine.com/docs/82379/2366394)
+  （Agent Plan 使用 `/api/plan/v3` 专属地址和专属 Key，与标准推理地址 `/api/v3` 不通用）。
+- 思维模型推理阶段的 `reasoning_content` 不会作为回复流式输出，只输出正式回答。
 
 ## 实现逻辑
 
@@ -42,6 +72,12 @@ uv run agent search "怎么做相似度检索" -k 3
 
 # 查看库内文档 / 切片数量
 uv run agent stats
+
+# 与火山方舟大模型对话（默认逐 token 流式输出）
+uv run agent chat "用一句话介绍向量检索"
+
+# 非流式输出 / 自定义系统提示词
+uv run agent chat "1+1=?" --no-stream --system "你只回答结果，不要解释"
 ```
 
 ## Python API
@@ -60,4 +96,17 @@ print(result.added_count, result.duplicate_count, result.chunks_added)
 
 for hit in store.search("查询内容", k=3):
     print(hit.score, hit.metadata["source"], hit.content[:80])
+```
+
+大模型对话（配置读取 `config.toml`）：
+
+```python
+from agent.llm import build_chat_agent, invoke_agent, stream_agent
+
+agent = build_chat_agent()                       # 火山方舟 ChatOpenAI（OpenAI 兼容）
+
+print(invoke_agent(agent, "你好"))               # 一次性完整回复
+
+for token in stream_agent(agent, "讲个小故事"):  # 逐 token 流式
+    print(token, end="", flush=True)
 ```

@@ -1,0 +1,19 @@
+# 火山引擎方舟（Agent Plan）大模型配置 —— OpenAI 兼容接口
+# 用法：复制为 config.toml 并填入真实密钥（config.toml 已被 gitignore）
+#   cp apps/agent/config.example.toml apps/agent/config.toml
+
+[llm]
+# Agent Plan 专属接入地址（注意路径中的 /plan，与标准推理地址 /api/v3 不同）
+base_url = "https://ark.cn-beijing.volces.com/api/plan/v3"
+# Agent Plan 专属 API Key（也可用环境变量 ARK_API_KEY 覆盖）
+api_key = "ark-你的密钥"
+# 套餐内模型 ID，可选模型见 https://www.volcengine.com/docs/82379/2366394
+model = "doubao-seed-2.0-mini"
+# 采样温度
+temperature = 0.7
+# 单次最大输出 token，不填则使用服务端默认值
+# max_tokens = 4096
+# CLI chat 默认流式输出（命令行可用 --no-stream / --stream 覆盖）
+stream = true
+# 默认系统提示词（可选，CLI 用 --system 覆盖）
+# system_prompt = "你是一个乐于助人的中文 AI 助手。"

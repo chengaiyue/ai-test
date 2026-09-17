@@ -1,9 +1,10 @@
-"""agent 命令行：向量库的添加 / 查询 / 统计。
+"""agent 命令行：向量库的添加 / 查询 / 统计，以及火山方舟大模型对话。
 
 用法（仓库根目录）：
     uv run agent add README.md [more.txt ...] [--title 标题]
     uv run agent add --text "直接传入一段文本" [--source 来源]
     uv run agent search "查询内容" [-k 5]
+    uv run agent chat "问大模型一个问题" [--system 系统提示词] [--no-stream]
     uv run agent stats
     uv run agent hello
 """
@@ -70,6 +71,35 @@ def _cmd_search(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_chat(args: argparse.Namespace) -> int:
+    """调用火山方舟大模型，默认逐 token 流式打印回复。"""
+    # 延迟导入：向量库类命令不需要大模型配置 / openai SDK
+    from agent.config import load_config
+    from agent.llm.agent import build_chat_agent, invoke_agent, stream_agent
+
+    try:
+        config = load_config()
+    except (FileNotFoundError, ValueError) as exc:
+        logger.error("%s", exc)
+        return 1
+
+    agent = build_chat_agent(config=config)
+    system_prompt = args.system if args.system is not None else config.system_prompt
+    streaming = config.stream if args.stream is None else args.stream
+
+    try:
+        if streaming:
+            for token in stream_agent(agent, args.prompt, system_prompt=system_prompt):
+                print(token, end="", flush=True)
+            print()
+        else:
+            print(invoke_agent(agent, args.prompt, system_prompt=system_prompt))
+    except Exception as exc:  # 网络 / 鉴权 / 模型错误统一收口，避免甩出整段堆栈
+        logger.error("调用火山方舟大模型失败：%s", exc)
+        return 1
+    return 0
+
+
 def _cmd_stats(_args: argparse.Namespace) -> int:
     store = VectorStore()
     stats = store.stats()
@@ -87,7 +117,7 @@ def _cmd_hello(_args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="agent", description="向量数据库：切片 / 查重 / 相似度查询"
+        prog="agent", description="向量数据库（切片 / 查重 / 相似度查询）与火山方舟大模型对话"
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -102,6 +132,17 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("query", help="查询内容")
     search.add_argument("-k", type=int, default=5, help="返回切片数量（默认 5）")
     search.set_defaults(handler=_cmd_search)
+
+    chat = subparsers.add_parser("chat", help="调用火山引擎方舟大模型（默认流式输出）")
+    chat.add_argument("prompt", help="问题 / 提示词")
+    chat.add_argument("--system", help="系统提示词（覆盖配置文件中的 system_prompt）")
+    chat.add_argument(
+        "--stream",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="是否流式输出（默认取配置文件 stream，命令行用 --stream / --no-stream 覆盖）",
+    )
+    chat.set_defaults(handler=_cmd_chat)
 
     stats = subparsers.add_parser("stats", help="查看文档 / 切片数量")
     stats.set_defaults(handler=_cmd_stats)
